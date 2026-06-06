@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<meta name="theme-color" content="#edf0f5">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Ana AI">
+<meta name="mobile-web-app-capable" content="yes">
+<title>Ana — AI Sekretarica</title>
+<link rel="manifest" id="manifestLink">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+:root{
+  --bg:220 20% 95%;--fg:220 20% 20%;--muted:220 10% 50%;
+  --primary:210 100% 55%;--prim-fg:0 0% 100%;--dest:0 80% 60%;
+  --nl:rgba(255,255,255,0.88);--nd:rgba(166,175,195,0.55);
+  --ndi:rgba(166,175,195,0.45);--nli:rgba(255,255,255,0.72);
+  --r:16px;
+}
+.dark{
+  --bg:225 15% 12%;--fg:220 15% 90%;--muted:220 10% 55%;
+  --nl:rgba(60,65,80,0.35);--nd:rgba(0,0,0,0.55);
+  --ndi:rgba(0,0,0,0.45);--nli:rgba(60,65,80,0.28);
+}
+html,body{height:100%;background:hsl(var(--bg));font-family:'Inter',sans-serif;color:hsl(var(--fg));overflow-x:hidden;}
+.nr{background:linear-gradient(145deg,hsl(var(--bg)),hsl(var(--bg)));box-shadow:6px 6px 14px var(--nd),-6px -6px 14px var(--nl);}
+.np{box-shadow:inset 4px 4px 8px var(--ndi),inset -4px -4px 8px var(--nli);background:hsl(var(--bg));}
+.nf{background:hsl(var(--bg));box-shadow:4px 4px 10px var(--nd),-4px -4px 10px var(--nl);}
+.nb{background:hsl(var(--bg));box-shadow:5px 5px 12px var(--nd),-5px -5px 12px var(--nl);cursor:pointer;border:none;transition:box-shadow .18s,transform .12s;}
+.nb:active{box-shadow:inset 3px 3px 6px var(--ndi),inset -3px -3px 6px var(--nli);}
+#app{height:100dvh;display:flex;flex-direction:column;overflow:hidden;}
+#sa{flex:1;overflow-y:auto;padding-bottom:150px;}
+.inn{max-width:600px;margin:0 auto;padding:14px;}
+/* NAV */
+.nw{display:flex;justify-content:center;margin-bottom:12px;}
+.nt{display:inline-flex;border-radius:20px;padding:4px;gap:2px;}
+.ntb{display:flex;align-items:center;gap:5px;padding:7px 14px;border-radius:14px;border:none;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;color:hsl(var(--muted));background:transparent;}
+.ntb.act{color:hsl(var(--fg));}
+.ntb.act{box-shadow:4px 4px 10px var(--nd),-4px -4px 10px var(--nl);}
+.ntb svg{width:14px;height:14px;}
+/* PROFILE */
+.pc{display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:var(--r);margin-bottom:14px;}
+.aw{position:relative;flex-shrink:0;}
+.aw img{width:42px;height:42px;border-radius:50%;object-fit:cover;}
+.od{position:absolute;bottom:-1px;right:-1px;width:12px;height:12px;border-radius:50%;background:#4ade80;border:2px solid hsl(var(--bg));}
+/* MAIN */
+.ms{display:flex;gap:10px;}
+.sb{display:flex;flex-direction:column;gap:10px;width:130px;flex-shrink:0;}
+.sbb{display:flex;align-items:center;gap:8px;padding:12px 10px;border-radius:var(--r);border:none;font-family:inherit;cursor:pointer;width:100%;transition:all .2s;text-align:left;}
+.sbi{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.sbi svg,.cv svg{color:hsl(var(--primary));}
+.sbn{font-size:12px;font-weight:700;color:hsl(var(--fg));}
+.sbc{font-size:10px;color:hsl(var(--muted));}
+.cv{margin-left:auto;width:14px;height:14px;color:hsl(var(--muted));transition:transform .2s;flex-shrink:0;}
+.cv.op{transform:rotate(90deg);}
+.mc{flex:1;min-width:0;}
+/* NOTES */
+.nir{display:flex;gap:8px;margin-bottom:10px;}
+.niw{flex:1;display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:12px;}
+.niw svg{width:14px;height:14px;color:hsl(var(--muted));flex-shrink:0;}
+.niw input,.cii{flex:1;background:transparent;border:none;outline:none;font-family:inherit;font-size:13px;color:hsl(var(--fg));}
+.niw input::placeholder,.cii::placeholder{color:hsl(var(--muted));}
+.ir{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.ir svg{width:14px;height:14px;color:hsl(var(--primary));}
+.nar{display:flex;gap:8px;margin-bottom:10px;}
+.nar input{flex:1;padding:8px 12px;border-radius:10px;border:none;outline:none;font-family:inherit;font-size:13px;color:hsl(var(--fg));}
+.nl2{display:flex;flex-direction:column;gap:7px;max-height:280px;overflow-y:auto;}
+.ni{display:flex;align-items:flex-start;gap:8px;padding:10px 12px;border-radius:12px;}
+.nd2{width:7px;height:7px;border-radius:50%;background:hsl(var(--primary));margin-top:5px;flex-shrink:0;}
+.ntx{font-size:13px;line-height:1.4;}
+.ntm{font-size:10px;color:hsl(var(--muted));margin-top:2px;}
+.nd3{width:28px;height:28px;border-radius:50%;background:rgba(239,68,68,.12);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.nd3 svg{width:12px;height:12px;color:#ef4444;}
+.em{text-align:center;padding:32px 0;font-size:13px;color:hsl(var(--muted));}
+/* ALARMS */
+.ai{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:14px;margin-bottom:7px;}
+.aic{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.aic svg{width:15px;height:15px;color:hsl(var(--primary));}
+.aii{flex:1;min-width:0;}
+.ain{font-size:12px;font-weight:700;color:hsl(var(--fg));}
+.aid{font-size:10px;color:hsl(var(--muted));margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.ait{font-size:11px;font-weight:600;color:hsl(var(--primary));margin-top:2px;}
+.tog{position:relative;width:42px;height:24px;border-radius:12px;border:none;cursor:pointer;transition:all .3s;flex-shrink:0;}
+.tog.on{background:hsl(var(--primary));}
+.tog.of{background:transparent;}
+.tog::after{content:'';position:absolute;top:3px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.2);transition:all .3s;}
+.tog.on::after{left:21px;}.tog.of::after{left:3px;}
+.db{width:32px;height:32px;border-radius:50%;background:rgba(239,68,68,.1);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.db svg{width:13px;height:13px;color:#ef4444;}
+.aaf{padding:12px;border-radius:14px;margin-top:8px;display:flex;flex-direction:column;gap:8px;}
+.aaf input{padding:8px 12px;border-radius:10px;border:none;outline:none;font-family:inherit;font-size:13px;color:hsl(var(--fg));}
+.br{display:flex;gap:8px;}
+.bp{flex:1;padding:9px;border-radius:11px;border:none;background:hsl(var(--primary));color:#fff;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;}
+.bs{flex:1;padding:9px;border-radius:11px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;color:hsl(var(--fg));}
+.aab{width:100%;padding:9px;border-radius:12px;display:flex;align-items:center;justify-content:center;gap:6px;font-family:inherit;font-size:12px;font-weight:700;color:hsl(var(--muted));margin-top:4px;}
+.aab svg{width:13px;height:13px;}
+/* CHAT */
+.ch{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.chl{display:flex;align-items:center;gap:8px;}
+.chi{width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;}
+.chi svg{width:14px;height:14px;color:hsl(var(--primary));}
+.cm{display:flex;flex-direction:column;gap:8px;max-height:300px;overflow-y:auto;margin-bottom:10px;padding-right:4px;}
+.cm::-webkit-scrollbar{width:2px;}.cm::-webkit-scrollbar-thumb{background:rgba(100,120,160,.25);border-radius:1px;}
+.mw{display:flex;gap:6px;}.mw.u{justify-content:flex-end;}
+.ma{width:24px;height:24px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;}
+.ma svg{width:11px;height:11px;}
+.mb{max-width:80%;padding:9px 12px;border-radius:16px;font-size:13px;line-height:1.5;}
+.mb.u{background:hsl(var(--primary));color:#fff;border-bottom-right-radius:4px;}
+.mb.b{color:hsl(var(--fg));border-bottom-left-radius:4px;}
+.td{display:flex;gap:4px;padding:2px 0;}
+.td span{width:7px;height:7px;border-radius:50%;background:hsl(var(--primary));animation:bnc 1.2s infinite;}
+.td span:nth-child(2){animation-delay:.2s;}.td span:nth-child(3){animation-delay:.4s;}
+@keyframes bnc{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+.cir{display:flex;gap:8px;}
+.ciw{flex:1;display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:12px;}
+.sb2{width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.sb2 svg{width:15px;height:15px;color:hsl(var(--primary));}
+/* SETTINGS */
+.sw{display:flex;flex-direction:column;gap:14px;}
+.ss{padding:14px;border-radius:var(--r);}
+.sst{font-size:12px;font-weight:800;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+.sst svg{width:14px;height:14px;color:hsl(var(--primary));}
+.ttr{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-radius:12px;margin-bottom:6px;cursor:pointer;}
+.skr{display:flex;gap:8px;}
+.skw{flex:1;display:flex;align-items:center;padding:7px 10px;border-radius:10px;gap:8px;}
+.ski{flex:1;background:transparent;border:none;outline:none;font-family:monospace;font-size:12px;color:hsl(var(--fg));}
+.ski::placeholder{color:hsl(var(--muted));}
+.eb{border:none;background:none;cursor:pointer;padding:2px;}
+.eb svg{width:14px;height:14px;color:hsl(var(--muted));}
+.ssb{padding:7px 16px;border-radius:10px;background:hsl(var(--primary));color:#fff;font-family:inherit;font-size:13px;font-weight:700;border:none;cursor:pointer;}
+.sr{margin-bottom:8px;}
+.slr{display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px;}
+.sl{color:hsl(var(--muted));}
+.sv{font-weight:700;color:hsl(var(--fg));font-family:monospace;}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:5px;border-radius:3px;outline:none;cursor:pointer;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:hsl(var(--bg));box-shadow:2px 2px 5px var(--nd),-1px -1px 3px var(--nl);}
+.nb2{width:100%;padding:10px;border-radius:12px;font-family:inherit;font-size:13px;font-weight:700;color:hsl(var(--fg));cursor:pointer;}
+/* AVATAR SETTINGS */
+.av-sec{padding:14px;border-radius:var(--r);}
+.av-preview-area{display:flex;align-items:center;gap:16px;margin-bottom:14px;}
+.av-canvas{position:relative;width:90px;height:90px;flex-shrink:0;}
+.av-canvas img{width:100%;height:100%;object-fit:contain;border-radius:0;}
+.av-upload-btn{display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:12px;font-family:inherit;font-size:13px;font-weight:700;color:hsl(var(--fg));cursor:pointer;width:100%;justify-content:center;}
+.av-upload-btn svg{width:16px;height:16px;color:hsl(var(--primary));}
+.av-remove{width:100%;padding:7px;background:rgba(239,68,68,.1);border:none;border-radius:10px;color:#ef4444;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;margin-top:6px;}
+.color-swatches{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;}
+.swatch{width:28px;height:28px;border-radius:50%;border:2px solid transparent;cursor:pointer;transition:transform .15s,border-color .15s;}
+.swatch.sel{border-color:hsl(var(--fg));transform:scale(1.18);}
+.custom-color-wrap{width:28px;height:28px;border-radius:50%;border:2px dashed hsl(var(--muted));display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;position:relative;}
+.custom-color-wrap input[type=color]{position:absolute;width:200%;height:200%;opacity:0;cursor:pointer;}
+/* NONE PH */
+.none-ph{display:flex;align-items:center;justify-content:center;padding:40px 20px;border-radius:var(--r);min-height:160px;}
+.none-ph p{font-size:13px;color:hsl(var(--muted));text-align:center;}
+/* MIC */
+.mf{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:70;display:flex;flex-direction:column;align-items:center;gap:6px;}
+.mo{position:relative;}
+.mg{position:absolute;inset:-12px;border-radius:50%;animation:pg 3s ease-in-out infinite;pointer-events:none;z-index:1;}
+@keyframes pg{0%,100%{box-shadow:0 0 20px rgba(59,130,246,.3),0 0 60px rgba(59,130,246,.1);}50%{box-shadow:0 0 30px rgba(59,130,246,.5),0 0 80px rgba(59,130,246,.2);}}
+.mg.act{box-shadow:0 0 30px rgba(59,130,246,.6),0 0 80px rgba(59,130,246,.25)!important;animation:none;}
+.mr{position:absolute;inset:0;border-radius:50%;border:2px solid rgba(59,130,246,.3);animation:rp 2s infinite;pointer-events:none;}
+.mr:nth-child(2){animation-delay:.6s;}.mr:nth-child(3){animation-delay:1.2s;}
+@keyframes rp{0%{transform:scale(1);opacity:.6}100%{transform:scale(2.5);opacity:0}}
+.mbtn{position:relative;z-index:3;width:72px;height:72px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s;}
+.mbtn.idl{background:hsl(var(--bg));}
+.mbtn.lis{background:linear-gradient(135deg,hsl(var(--primary)),hsl(210,100%,45%));}
+.min2{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+.min2 svg{width:22px;height:22px;}
+.ml{font-size:11px;color:hsl(var(--muted));position:relative;z-index:3;}
+.ltb{position:absolute;bottom:calc(100% + 10px);left:50%;transform:translateX(-50%);background:hsl(var(--fg));color:hsl(var(--bg));padding:8px 14px;border-radius:14px;font-size:12px;font-weight:600;white-space:nowrap;max-width:280px;overflow:hidden;text-overflow:ellipsis;box-shadow:0 4px 16px rgba(0,0,0,.2);z-index:10;}
+.ltb::after{content:'';position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);width:10px;height:10px;background:hsl(var(--fg));clip-path:polygon(50% 100%,0 0,100% 0);}
+.bgc{position:absolute;inset:-18px;border-radius:50%;background:hsl(var(--bg));z-index:0;}
+/* FLOATING AVATAR */
+#fav{position:fixed;z-index:60;cursor:grab;user-select:none;touch-action:none;}
+#fav:active{cursor:grabbing;}
+.ag{position:absolute;inset:-20%;border-radius:50%;pointer-events:none;transition:all .5s;}
+.ai2{position:relative;width:100%;height:100%;object-fit:contain;pointer-events:none;}
+/* TOAST */
+.toast{position:fixed;bottom:110px;left:50%;transform:translateX(-50%) translateY(12px);background:hsl(var(--fg));color:hsl(var(--bg));padding:8px 18px;border-radius:12px;font-size:13px;font-weight:600;box-shadow:0 4px 18px rgba(0,0,0,.3);opacity:0;transition:opacity .22s,transform .22s;z-index:500;pointer-events:none;white-space:nowrap;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+/* PWA INSTALL */
+.pwa-banner{display:none;position:fixed;top:0;left:0;right:0;z-index:999;background:hsl(var(--primary));color:#fff;padding:10px 16px;font-size:13px;font-weight:700;justify-content:space-between;align-items:center;box-shadow:0 2px 12px rgba(0,0,0,.2);}
+.pwa-banner.vis{display:flex;}
+.pwa-btns{display:flex;gap:8px;}
+.pwa-install{padding:5px 14px;background:#fff;color:hsl(var(--primary));border:none;border-radius:8px;font-family:inherit;font-size:12px;font-weight:800;cursor:pointer;}
+.pwa-dismiss{padding:5px 10px;background:rgba(255,255,255,.2);color:#fff;border:none;border-radius:8px;font-family:inherit;font-size:12px;cursor:pointer;}
+/* OFFLINE BADGE */
+.offline-badge{position:fixed;top:8px;right:8px;background:#ef4444;color:#fff;font-size:10px;font-weight:800;padding:3px 8px;border-radius:8px;z-index:200;display:none;}
+.offline-badge.vis{display:block;}
+#sa::-webkit-scrollbar{width:3px;}#sa::-webkit-scrollbar-thumb{background:rgba(100,120,160,.2);border-radius:2px;}
+.dark .aaf input,.dark .nar input{background:hsl(225,15%,16%);color:hsl(220,15%,90%);}
+</style>
+</head>
+<body>
+
+<!-- PWA BANNER -->
+<div class="pwa-banner" id="pwaBanner">
+  <span>📱 Instaliraj Ana AI kao aplikaciju</span>
+  <div class="pwa-btns">
+    <button class="pwa-install" id="pwaInstallBtn">Instaliraj</button>
+    <button class="pwa-dismiss" onclick="document.getElementById('pwaBanner').classList.remove('vis')">✕</button>
+  </div>
+</div>
+<div class="offline-badge" id="offlineBadge">📵 Offline</div>
+
+<div id="app">
+  <div id="sa">
+    <div class="inn">
+      <!-- NAV -->
+      <div class="nw">
+        <div class="nt nf" id="navTabs">
+          <button class="ntb act" data-view="main" onclick="sv('main')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>
+            <span>Glavna</span>
+          </button>
+          <button class="ntb" data-view="chat" onclick="sv('chat')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            <span>AI Chat</span>
+          </button>
+          <button class="ntb" data-view="settings" onclick="sv('settings')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            <span>Podešavanja</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- PROFILE -->
+      <div class="pc nr">
+        <div class="aw">
+          <img id="profileAvatar" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=face" alt="Ana">
+          <div class="od"></div>
+        </div>
+        <div>
+          <div style="font-weight:700;font-size:13px">Ana — AI Sekretarica</div>
+          <div style="font-size:11px;color:hsl(var(--muted));margin-top:1px">Online • Offline Ready</div>
+        </div>
+        <div style="margin-left:auto;font-size:11px;color:hsl(var(--muted));flex-shrink:0" id="clk">00:00</div>
+      </div>
+
+      <!-- MAIN -->
+      <div id="view-main">
+        <div class="ms">
+          <div class="sb">
+            <button class="sbb nr" onclick="tp('notes')">
+              <div class="sbi nf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/></svg></div>
+              <div style="min-width:0"><div class="sbn">Beleške</div><div class="sbc" id="nc">0 stavki</div></div>
+              <svg class="cv" id="nch" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9,18 15,12 9,6"/></svg>
+            </button>
+            <button class="sbb nr" onclick="tp('alarms')">
+              <div class="sbi nf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="13" r="8"/><polyline points="12,9 12,13 14,15"/><path d="M5 3l-1.5 2M20.5 5L19 3"/></svg></div>
+              <div style="min-width:0"><div class="sbn">Alarmi</div><div class="sbc" id="ac">0 alarma</div></div>
+              <svg class="cv" id="ach" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9,18 15,12 9,6"/></svg>
+            </button>
+          </div>
+          <div class="mc">
+            <div id="pan-none" class="none-ph nf"><p>← Izaberi Beleške ili Alarme</p></div>
+            <div id="pan-notes" class="nf" style="display:none;padding:14px;border-radius:var(--r)">
+              <div style="font-size:13px;font-weight:800;margin-bottom:12px">📝 Beleške</div>
+              <div class="nir">
+                <div class="niw np"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input id="ns" placeholder="Pretraži..." oninput="rn()"></div>
+                <button class="ir nb" onclick="tna()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+              </div>
+              <div class="nar" id="nar" style="display:none">
+                <input id="nni" placeholder="Nova beleška..." class="np" onkeydown="if(event.key==='Enter')an()">
+                <button class="bp" style="border-radius:10px;padding:8px 14px;font-size:12px" onclick="an()">Dodaj</button>
+              </div>
+              <div class="nl2" id="nl"></div>
+            </div>
+            <div id="pan-alarms" class="nf" style="display:none;padding:14px;border-radius:var(--r)">
+              <div style="font-size:13px;font-weight:800;margin-bottom:12px">⏰ Alarmi</div>
+              <div id="al"></div>
+              <div id="aaf" style="display:none" class="aaf np">
+                <input id="albl" placeholder="Za šta je alarm?" class="nf">
+                <input id="aldc" placeholder="Detalji (opciono)" class="nf">
+                <input type="time" id="altm" value="08:00" class="nf">
+                <div class="br"><button class="bp" onclick="sa2()">Dodaj</button><button class="bs nb" onclick="document.getElementById('aaf').style.display='none'">Otkaži</button></div>
+              </div>
+              <button class="aab nb" onclick="document.getElementById('aaf').style.display='flex';document.getElementById('albl').focus()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Novi alarm
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CHAT -->
+      <div id="view-chat" style="display:none">
+        <div class="nf" style="padding:14px;border-radius:var(--r)">
+          <div class="ch">
+            <div class="chl">
+              <div class="chi nf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>
+              <div><div style="font-size:13px;font-weight:800">Ana — AI Sekretarica</div><div style="font-size:10px;color:hsl(var(--muted))">Srpski · English · Deutsch</div></div>
+            </div>
+            <button class="nb" style="width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center" onclick="cc()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" width="13" height="13"><polyline points="3,6 5,6 21,6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+            </button>
+          </div>
+          <div class="cm" id="cm">
+            <div id="ce" style="text-align:center;padding:28px 0">
+              <div style="font-size:36px;opacity:.25;margin-bottom:8px">🤖</div>
+              <p style="font-size:13px;color:hsl(var(--muted))">Zdravo! Ja sam Ana.</p>
+              <p style="font-size:11px;color:hsl(var(--muted));margin-top:4px">Tvoja lična sekretarica</p>
+            </div>
+          </div>
+          <div class="cir">
+            <div class="ciw np"><input class="cii" id="ci" placeholder="Piši poruku Ani..." onkeydown="if(event.key==='Enter')sc()"></div>
+            <button class="sb2 nb" onclick="sc()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22,2 15,22 11,13 2,9"/></svg></button>
+          </div>
+        </div>
+      </div>
+
+      <!-- SETTINGS -->
+      <div id="view-settings" style="display:none">
+        <div class="sw">
+
+          <!-- THEME -->
+          <div class="ttr nr" onclick="tt()">
+            <div style="display:flex;align-items:center;gap:8px">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="hsl(210,100%,55%)" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+              <span style="font-size:13px;font-weight:700" id="tl">Svetla tema</span>
+            </div>
+            <button class="tog on" id="ttb"></button>
+          </div>
+
+          <!-- AVATAR -->
+          <div class="av-sec nr">
+            <div class="sst">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              👤 Avatar / Figurica
+            </div>
+
+            <div class="av-preview-area">
+              <div class="av-canvas" id="avCanvas">
+                <img id="avPrev" src="" alt="Avatar" style="width:100%;height:100%;object-fit:contain;display:none">
+                <div id="avEmpty" style="width:90px;height:90px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:32px;opacity:.4">👤</div>
+              </div>
+              <div style="flex:1">
+                <button class="av-upload-btn nb" onclick="document.getElementById('avFileInp').click()">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/></svg>
+                  Izaberi iz galerije
+                </button>
+                <input type="file" id="avFileInp" accept="image/*" style="display:none" onchange="uploadAvatar(this)">
+                <button class="av-remove" id="avRemoveBtn" style="display:none" onclick="removeAvatar()">🗑 Ukloni avatar</button>
+              </div>
+            </div>
+
+            <!-- SIZE SLIDER -->
+            <div class="sr">
+              <div class="slr"><span class="sl">📏 Veličina avatara</span><span class="sv" id="sv-avSize"><span id="svAvSize">60</span>px</span></div>
+              <input type="range" min="30" max="200" value="60" id="avSizeSlider" oninput="updateAvSize(this.value)">
+            </div>
+
+            <!-- OPACITY SLIDER -->
+            <div class="sr">
+              <div class="slr"><span class="sl">🌫 Providnost</span><span class="sv"><span id="svAvOpacity">100</span>%</span></div>
+              <input type="range" min="10" max="100" value="100" id="avOpSlider" oninput="updateAvOpacity(this.value)">
+            </div>
+
+            <!-- GLOW INTENSITY -->
+            <div class="sr">
+              <div class="slr"><span class="sl">✨ Jačina sjaja</span><span class="sv"><span id="svGlowInt">40</span>%</span></div>
+              <input type="range" min="0" max="100" value="40" id="glowIntSlider" oninput="updateGlowInt(this.value)">
+            </div>
+
+            <!-- GLOW SPREAD -->
+            <div class="sr">
+              <div class="slr"><span class="sl">💫 Širina sjaja</span><span class="sv"><span id="svGlowSp">50</span>%</span></div>
+              <input type="range" min="0" max="100" value="50" id="glowSpSlider" oninput="updateGlowSp(this.value)">
+            </div>
+
+            <!-- GLOW COLOR -->
+            <div style="margin-top:4px">
+              <div style="font-size:11px;color:hsl(var(--muted));margin-bottom:8px;font-weight:600">🎨 Boja sjaja</div>
+              <div class="color-swatches" id="swatches"></div>
+            </div>
+          </div>
+
+          <!-- GROQ API -->
+          <div class="ss nr">
+            <div class="sst">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              Groq API Ključ
+            </div>
+            <div class="skr">
+              <div class="skw np"><input type="password" id="gki" class="ski" placeholder="gsk_..."><button class="eb" onclick="tke()"><svg id="eic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></div>
+              <button class="ssb" onclick="sgk()">Sačuvaj</button>
+            </div>
+            <p style="font-size:11px;color:hsl(var(--muted));margin-top:6px">console.groq.com — besplatan API ključ</p>
+          </div>
+
+          <!-- 3D SLIDERS -->
+          <div class="ss nr">
+            <div class="sst">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg>
+              ✨ 3D Izgled
+            </div>
+            <div id="slR"></div>
+          </div>
+
+          <!-- NOTIFICATIONS + INSTALL -->
+          <button class="nb2 nb" onclick="reqNotif()">🔔 Uključi obaveštenja</button>
+          <button class="nb2 nb" id="pwaBtn2" style="display:none" onclick="installPWA()">📱 Instaliraj kao aplikaciju</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MIC -->
+  <div class="mf">
+    <div class="mo">
+      <div class="bgc"></div>
+      <div class="mg" id="mg"></div>
+      <div id="ltb" class="ltb" style="display:none"></div>
+      <button class="mbtn idl nb" id="mb" onclick="toggleMic()">
+        <div class="min2 np" id="mi">
+          <svg id="mic" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="hsl(210,100%,55%)" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+        </div>
+      </button>
+    </div>
+    <span class="ml" id="mlab">🎙️ Pritisni za glas</span>
+  </div>
+</div>
+
+<!-- FLOATING AVATAR -->
+<div id="fav" style="left:16px;top:80px;width:60px;height:60px">
+  <div class="ag" id="ag"></div>
+  <img class="ai2" id="fimg" src="" alt="Ana" draggable="false" style="display:none">
+  <div id="fDefault" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:32px;opacity:.5">👤</div>
+</div>
+
+<div class="toast" id="tst"></div>
+
+<script>
+// ══ STATE ══
+let notes=JSON.parse(localStorage.getItem('notes')||'[]');
+let alarms=JSON.parse(localStorage.getItem('alarms')||'[]');
+let chatH=JSON.parse(localStorage.getItem('chatH')||'[]');
+let cfg=JSON.parse(localStorage.getItem('cfg')||JSON.stringify({
+  groqKey:'',dark:false,
+  shadowDepth:6,shadowBlur:14,lightIntensity:80,borderRadius:16,elevation:4,glowStrength:30,surfaceGloss:50,
+  glowColor:'#3b82f6',glowIntensity:40,glowSpread:50,
+  avSize:60,avOpacity:100,avatarData:''
+}));
+
+let curView='main',curPanel='none',recog=null,isRec=false,deferredPrompt=null;
+
+const SWATCHES=['#3b82f6','#8b5cf6','#ec4899','#10b981','#f59e0b','#ef4444','#06b6d4','#fff'];
+
+// ══ PWA MANIFEST INLINE ══
+(function(){
+  const manifest={
+    name:'Ana AI Sekretarica',short_name:'Ana AI',
+    description:'AI lična sekretarica — offline first',
+    start_url:'.',display:'standalone',
+    background_color:'#edf0f5',theme_color:'#3b82f6',
+    icons:[{src:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="20" fill="%233b82f6"/><text y=".9em" font-size="80" x="10">🤖</text></svg>',sizes:'any',type:'image/svg+xml'}]
+  };
+  const blob=new Blob([JSON.stringify(manifest)],{type:'application/json'});
+  document.getElementById('manifestLink').href=URL.createObjectURL(blob);
+})();
+
+// ══ SERVICE WORKER (inline blob) ══
+(function(){
+  if(!('serviceWorker' in navigator)) return;
+  const swCode=`
+const CACHE='ana-ai-v1';
+const ASSETS=[self.location.href];
+self.addEventListener('install',e=>{
+  e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)).then(()=>self.skipWaiting()));
+});
+self.addEventListener('activate',e=>{
+  e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));
+});
+self.addEventListener('fetch',e=>{
+  if(e.request.method!=='GET') return;
+  e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(res=>{
+    const clone=res.clone();
+    caches.open(CACHE).then(c=>c.put(e.request,clone));
+    return res;
+  }).catch(()=>caches.match(e.request))));
+});
+  `;
+  const blob=new Blob([swCode],{type:'application/javascript'});
+  const url=URL.createObjectURL(blob);
+  navigator.serviceWorker.register(url).catch(()=>{});
+})();
+
+// ══ PWA INSTALL ══
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault(); deferredPrompt=e;
+  document.getElementById('pwaBanner').classList.add('vis');
+  document.getElementById('pwaBtn2').style.display='block';
+});
+window.addEventListener('appinstalled',()=>{
+  document.getElementById('pwaBanner').classList.remove('vis');
+  document.getElementById('pwaBtn2').style.display='none';
+  showToast('✅ Aplikacija instalirana!');
+});
+document.getElementById('pwaInstallBtn').addEventListener('click',installPWA);
+function installPWA(){
+  if(!deferredPrompt) return;
+  deferredPrompt.prompt();
+  deferredPrompt.userChoice.then(()=>{deferredPrompt=null;});
+}
+
+// ══ OFFLINE ══
+function updateOnline(){
+  document.getElementById('offlineBadge').classList.toggle('vis',!navigator.onLine);
+}
+window.addEventListener('online',updateOnline);
+window.addEventListener('offline',updateOnline);
+updateOnline();
+
+// ══ INIT ══
+function init(){
+  applyTheme(); updateClock(); setInterval(updateClock,10000);
+  rn(); ra(); rc(); renderSliders(); renderSwatches();
+  initDrag(); initAlarmChecker(); initSpeech(); loadSettings();
+  startupGreeting(); applyAvatarToFloat();
+  // restore slider values
+  document.getElementById('avSizeSlider').value=cfg.avSize||60;
+  document.getElementById('svAvSize').textContent=cfg.avSize||60;
+  document.getElementById('avOpSlider').value=cfg.avOpacity||100;
+  document.getElementById('svAvOpacity').textContent=cfg.avOpacity||100;
+  document.getElementById('glowIntSlider').value=cfg.glowIntensity||40;
+  document.getElementById('svGlowInt').textContent=cfg.glowIntensity||40;
+  document.getElementById('glowSpSlider').value=cfg.glowSpread||50;
+  document.getElementById('svGlowSp').textContent=cfg.glowSpread||50;
+  // restore preview
+  if(cfg.avatarData){
+    document.getElementById('avPrev').src=cfg.avatarData;
+    document.getElementById('avPrev').style.display='block';
+    document.getElementById('avEmpty').style.display='none';
+    document.getElementById('avRemoveBtn').style.display='block';
+  }
+}
+function updateClock(){document.getElementById('clk').textContent=new Date().toLocaleTimeString('sr',{hour:'2-digit',minute:'2-digit'});}
+
+// ══ VIEWS ══
+function sv(v){
+  curView=v;
+  ['main','chat','settings'].forEach(n=>document.getElementById('view-'+n).style.display=n===v?'':'none');
+  document.querySelectorAll('.ntb').forEach(t=>{
+    const is=t.dataset.view===v;
+    t.classList.toggle('act',is);
+    if(is) t.style.boxShadow='4px 4px 10px var(--nd),-4px -4px 10px var(--nl)';
+    else t.style.boxShadow='';
+  });
+}
+function tp(p){
+  curPanel=curPanel===p?'none':p;
+  document.getElementById('pan-none').style.display=curPanel==='none'?'flex':'none';
+  document.getElementById('pan-notes').style.display=curPanel==='notes'?'block':'none';
+  document.getElementById('pan-alarms').style.display=curPanel==='alarms'?'block':'none';
+  document.getElementById('nch').classList.toggle('op',curPanel==='notes');
+  document.getElementById('ach').classList.toggle('op',curPanel==='alarms');
+  document.querySelectorAll('.sbb').forEach((b,i)=>{
+    const active=['notes','alarms'][i]===curPanel;
+    b.style.boxShadow=active?'inset 4px 4px 8px var(--ndi),inset -4px -4px 8px var(--nli)':'6px 6px 14px var(--nd),-6px -6px 14px var(--nl)';
+  });
+  if(p==='notes') rn();
+  if(p==='alarms') ra();
+}
+
+// ══ NOTES ══
+function sn(){localStorage.setItem('notes',JSON.stringify(notes));}
+function tna(){const r=document.getElementById('nar');r.style.display=r.style.display==='none'?'flex':'none';if(r.style.display==='flex')document.getElementById('nni').focus();}
+function an(t){
+  const inp=document.getElementById('nni');
+  const tx=(t||inp?.value||'').trim(); if(!tx) return;
+  notes.unshift({id:Date.now()+'',text:tx,createdAt:new Date().toISOString()});
+  sn(); rn(); if(inp){inp.value='';document.getElementById('nar').style.display='none';}
+  uc();
+}
+function dn(id){notes=notes.filter(n=>n.id!==id);sn();rn();uc();}
+function rn(){
+  const q=(document.getElementById('ns')?.value||'').toLowerCase();
+  const f=notes.filter(n=>n.text.toLowerCase().includes(q));
+  const l=document.getElementById('nl'); if(!l) return;
+  if(!f.length){l.innerHTML=`<div class="em">Nema beleški</div>`;return;}
+  l.innerHTML=f.map(n=>`<div class="ni nr"><div class="nd2"></div><div style="flex:1;min-width:0"><div class="ntx">${esc(n.text)}</div><div class="ntm">${ft(n.createdAt)}</div></div><button class="nd3" onclick="dn('${n.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>`).join('');
+  uc();
+}
+
+// ══ ALARMS ══
+function sv2(){localStorage.setItem('alarms',JSON.stringify(alarms));}
+function sa2(){
+  const lbl=document.getElementById('albl').value.trim(); if(!lbl) return;
+  alarms.push({id:Date.now()+'',label:lbl,description:document.getElementById('aldc').value.trim(),time:document.getElementById('altm').value,enabled:true,icon:'reminder'});
+  sv2(); ra(); uc();
+  document.getElementById('albl').value=''; document.getElementById('aldc').value=''; document.getElementById('altm').value='08:00';
+  document.getElementById('aaf').style.display='none';
+  spk('Alarm dodat.'); showToast('⏰ Alarm dodat!');
+}
+function adDirect(l,t,i,d,dt){alarms.push({id:Date.now()+'',label:l,description:d||'',time:t||'08:00',date:dt,enabled:true,icon:i||'reminder'});sv2();ra();uc();}
+function ta(id){const a=alarms.find(x=>x.id===id);if(a){a.enabled=!a.enabled;sv2();ra();}}
+function da(id){alarms=alarms.filter(a=>a.id!==id);sv2();ra();uc();}
+const icS={workout:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><path d="M6.5 6.5h11M6 12h12M5 18h14"/></svg>',call:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><circle cx="12" cy="13" r="8"/><polyline points="12,9 12,13 14,15"/></svg>',reminder:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>'};
+function ra(){
+  const l=document.getElementById('al'); if(!l) return;
+  if(!alarms.length){l.innerHTML=`<div class="em">Nema alarma</div>`;return;}
+  l.innerHTML=alarms.map(a=>`<div class="ai nr" style="${!a.enabled?'opacity:.5':''}"><div class="aic nf">${icS[a.icon]||icS.reminder}</div><div class="aii"><div class="ain">${esc(a.label)}</div>${a.description&&a.description!==a.label?`<div class="aid">${esc(a.description)}</div>`:''}<div class="ait">${fat(a.time)}</div></div><button class="tog ${a.enabled?'on nf':'of np'}" onclick="ta('${a.id}')"></button><button class="db" onclick="da('${a.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="13" height="13"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>`).join('');
+}
+function uc(){document.getElementById('nc').textContent=notes.length+' stavki';document.getElementById('ac').textContent=alarms.length+' alarma';}
+
+// ══ CHAT ══
+function sc2(){localStorage.setItem('chatH',JSON.stringify(chatH));}
+function cc(){chatH=[];sc2();rc();document.getElementById('ce').style.display='block';}
+function rc(){
+  const msgs=document.getElementById('cm'); if(!msgs) return;
+  msgs.querySelectorAll('.mw').forEach(e=>e.remove());
+  if(!chatH.length){document.getElementById('ce').style.display='block';return;}
+  document.getElementById('ce').style.display='none';
+  chatH.forEach(m=>acm(m.role,m.content,false));
+  msgs.scrollTop=msgs.scrollHeight;
+}
+function acm(role,content,scrl=true){
+  const msgs=document.getElementById('cm');
+  document.getElementById('ce').style.display='none';
+  const w=document.createElement('div'); w.className='mw '+(role==='user'?'u':'');
+  const bi=`<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="hsl(210,100%,55%)" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>`;
+  const ui=`<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`;
+  w.innerHTML=role==='user'
+    ?`<div class="mb u">${esc(content)}</div><div class="ma nf">${ui}</div>`
+    :`<div class="ma nf">${bi}</div><div class="mb b nr">${esc(content)}</div>`;
+  msgs.appendChild(w); if(scrl) msgs.scrollTop=msgs.scrollHeight;
+}
+function stypng(){
+  const m=document.getElementById('cm');
+  const el=document.createElement('div'); el.className='mw'; el.id='typ';
+  el.innerHTML=`<div class="ma nf"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="hsl(210,100%,55%)" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div><div class="mb b nr"><div class="td"><span></span><span></span><span></span></div></div>`;
+  m.appendChild(el); m.scrollTop=m.scrollHeight;
+}
+function htypng(){document.getElementById('typ')?.remove();}
+
+async function sc(t){
+  const inp=document.getElementById('ci');
+  const msg=(t||inp?.value||'').trim(); if(!msg) return;
+  if(inp) inp.value='';
+  chatH.push({role:'user',content:msg}); sc2(); acm('user',msg);
+  stypng();
+  const rep=await askG(msg); htypng();
+  chatH.push({role:'assistant',content:rep}); sc2(); acm('assistant',rep);
+  spk(rep); procAct(rep,msg);
+}
+
+async function askG(um){
+  const key=cfg.groqKey;
+  if(!key) return '⚙️ Groq API ključ nije podešen. Idi u Podešavanja i unesi ključ.';
+  if(!navigator.onLine) return '📵 Nema internet konekcije. Radi offline — AI chat nije dostupan.';
+  const now=new Date();
+  const days=['nedelja','ponedeljak','utorak','sreda','četvrtak','petak','subota'];
+  const tmr=new Date(now); tmr.setDate(tmr.getDate()+1);
+  const tS=`${tmr.getFullYear()}-${String(tmr.getMonth()+1).padStart(2,'0')}-${String(tmr.getDate()).padStart(2,'0')}`;
+  const sp=`Ti si Ana, AI lična sekretarica. Ljubazna, profesionalna. Odgovaraj kratko i na jeziku korisnika.\nDATUM: ${days[now.getDay()]}, ${now.getDate()}. ${now.toLocaleString('sr',{month:'long'})} ${now.getFullYear()}\nVREME: ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}\nSUTRA: ${tS}\nALARMI: ${alarms.filter(a=>a.enabled).map(a=>a.label+' '+a.time).join(', ')||'nema'}\nBELEŠKE: ${notes.slice(0,5).map(n=>n.text).join(', ')||'nema'}\n\nKad korisnik želi alarm dodaj na KRAJU:\nACTION_ALARM|naziv|HH:MM|opis\nKad želi belešku:\nACTION_NOTE|tekst\nNe prikazuj ACTION_ linije korisniku.`;
+  try{
+    const r=await fetch('https://api.groq.com/openai/v1/chat/completions',{
+      method:'POST',
+      headers:{Authorization:`Bearer ${key}`,'Content-Type':'application/json'},
+      body:JSON.stringify({model:'llama-3.3-70b-versatile',messages:[{role:'system',content:sp},...chatH.slice(-20).map(m=>({role:m.role,content:m.content}))],max_tokens:512,temperature:0.6})
+    });
+    if(!r.ok) return `❌ Groq greška: ${r.status}`;
+    const d=await r.json(); return d.choices?.[0]?.message?.content||'Nema odgovora.';
+  }catch{return '📡 Greška konekcije.';}
+}
+
+function procAct(rep,orig){
+  rep.split('\n').forEach(ln=>{
+    if(ln.startsWith('ACTION_ALARM|')){const p=ln.split('|');if(p[1]){adDirect(p[1],p[2],'reminder',p[3]||orig);showToast('⏰ '+p[1]);if(curPanel!=='alarms'){sv('main');setTimeout(()=>tp('alarms'),100);}}}
+    if(ln.startsWith('ACTION_NOTE|')){const t=ln.replace('ACTION_NOTE|','').trim();if(t){an(t);showToast('📝 Beleška sačuvana');}}
+  });
+}
+
+// ══ SETTINGS ══
+function saveCfg(){localStorage.setItem('cfg',JSON.stringify(cfg));}
+function loadSettings(){document.getElementById('gki').value=cfg.groqKey||'';}
+function sgk(){cfg.groqKey=document.getElementById('gki').value.trim();saveCfg();showToast('✅ API ključ sačuvan!');}
+function tke(){const i=document.getElementById('gki');i.type=i.type==='password'?'text':'password';}
+function reqNotif(){if(!('Notification'in window)){showToast('Nije podržano');return;}Notification.requestPermission().then(p=>showToast(p==='granted'?'🔔 Obaveštenja uključena!':'❌ Odbijena'));}
+
+const slDefs=[
+  {key:'shadowDepth',label:'Shadow Depth',min:0,max:20},
+  {key:'shadowBlur',label:'Shadow Blur',min:0,max:40},
+  {key:'lightIntensity',label:'Light Intensity',min:0,max:100},
+  {key:'borderRadius',label:'Border Radius',min:0,max:32},
+  {key:'elevation',label:'Elevation',min:0,max:12},
+  {key:'glowStrength',label:'Glow Strength',min:0,max:60},
+  {key:'surfaceGloss',label:'Surface Gloss',min:0,max:100},
+];
+function renderSliders(){
+  document.getElementById('slR').innerHTML=slDefs.map(({key,label,min,max})=>{
+    const v=cfg[key]||0; const pct=((v-min)/(max-min)*100);
+    return `<div class="sr"><div class="slr"><span class="sl">${label}</span><span class="sv" id="sv-${key}">${v}</span></div><input type="range" min="${min}" max="${max}" value="${v}" style="background:linear-gradient(to right,hsl(var(--primary)) ${pct}%,hsl(var(--muted)) ${pct}%)" oninput="usl('${key}',this.value,${min},${max},this)"></div>`;
+  }).join('');
+}
+function usl(key,val,min,max,el){
+  cfg[key]=Number(val); document.getElementById('sv-'+key).textContent=val;
+  const pct=((val-min)/(max-min)*100);
+  el.style.background=`linear-gradient(to right,hsl(var(--primary)) ${pct}%,hsl(var(--muted)) ${pct}%)`;
+  saveCfg();
+}
+
+// ══ AVATAR ══
+function uploadAvatar(inp){
+  const f=inp.files[0]; if(!f) return;
+  if(!f.type.startsWith('image/')){showToast('Izaberi sliku!');return;}
+  if(f.size>10*1024*1024){showToast('Max 10MB');return;}
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const data=e.target.result;
+    // Compress via canvas
+    const img=new Image();
+    img.onload=()=>{
+      const MAX=400;
+      let w=img.width,h=img.height;
+      if(w>h){if(w>MAX){h=h/w*MAX;w=MAX;}}else{if(h>MAX){w=w/h*MAX;h=MAX;}}
+      const c=document.createElement('canvas'); c.width=w; c.height=h;
+      c.getContext('2d').drawImage(img,0,0,w,h);
+      const compressed=c.toDataURL('image/png',0.85);
+      cfg.avatarData=compressed; saveCfg();
+      document.getElementById('avPrev').src=compressed;
+      document.getElementById('avPrev').style.display='block';
+      document.getElementById('avEmpty').style.display='none';
+      document.getElementById('avRemoveBtn').style.display='block';
+      applyAvatarToFloat(); showToast('✅ Avatar sačuvan!');
+    };
+    img.src=data;
+  };
+  reader.readAsDataURL(f);
+  inp.value='';
+}
+
+function removeAvatar(){
+  cfg.avatarData=''; saveCfg();
+  document.getElementById('avPrev').src='';
+  document.getElementById('avPrev').style.display='none';
+  document.getElementById('avEmpty').style.display='flex';
+  document.getElementById('avRemoveBtn').style.display='none';
+  applyAvatarToFloat(); showToast('🗑 Avatar uklonjen');
+}
+
+function applyAvatarToFloat(){
+  const fimg=document.getElementById('fimg');
+  const fdef=document.getElementById('fDefault');
+  const profav=document.getElementById('profileAvatar');
+  if(cfg.avatarData){
+    fimg.src=cfg.avatarData; fimg.style.display='block'; fdef.style.display='none';
+    profav.src=cfg.avatarData;
+  } else {
+    fimg.style.display='none'; fdef.style.display='flex';
+    profav.src='https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=face';
+  }
+  updateFloatSize(); applyAvatarGlow();
+}
+
+function updateFloatSize(){
+  const fav=document.getElementById('fav');
+  const sz=cfg.avSize||60;
+  fav.style.width=sz+'px'; fav.style.height=sz+'px';
+  const fimg=document.getElementById('fimg');
+  fimg.style.opacity=(cfg.avOpacity||100)/100;
+  applyAvatarGlow();
+}
+
+function updateAvSize(v){
+  cfg.avSize=Number(v); document.getElementById('svAvSize').textContent=v;
+  saveCfg(); updateFloatSize();
+}
+function updateAvOpacity(v){
+  cfg.avOpacity=Number(v); document.getElementById('svAvOpacity').textContent=v;
+  saveCfg(); updateFloatSize();
+}
+function updateGlowInt(v){
+  cfg.glowIntensity=Number(v); document.getElementById('svGlowInt').textContent=v;
+  saveCfg(); applyAvatarGlow();
+}
+function updateGlowSp(v){
+  cfg.glowSpread=Number(v); document.getElementById('svGlowSp').textContent=v;
+  saveCfg(); applyAvatarGlow();
+}
+
+function applyAvatarGlow(){
+  const g=document.getElementById('ag'); if(!g) return;
+  const c=cfg.glowColor||'#3b82f6';
+  const i=(cfg.glowIntensity||40)/100;
+  const s=(cfg.glowSpread||50)/100*40;
+  g.style.background=`radial-gradient(circle,${ha(c,i*0.8)} 0%,${ha(c,i*0.3)} 40%,transparent 70%)`;
+  g.style.filter=`blur(${s*0.4}px)`;
+  const fi=document.getElementById('fimg');
+  if(fi) fi.style.filter=`drop-shadow(0 0 ${Math.max(4,s*0.25)}px ${ha(c,i*0.7)})`;
+}
+
+function renderSwatches(){
+  const c=document.getElementById('swatches'); if(!c) return;
+  c.innerHTML=SWATCHES.map(col=>`<div class="swatch${cfg.glowColor===col?' sel':''}" style="background:${col};box-shadow:0 0 8px ${col}66" onclick="setGlowColor('${col}')"></div>`).join('');
+  c.innerHTML+=`<div class="custom-color-wrap"><input type="color" value="${cfg.glowColor||'#3b82f6'}" oninput="setGlowColor(this.value)"><span style="font-size:9px;color:hsl(var(--muted));position:relative;z-index:1">+</span></div>`;
+}
+
+function setGlowColor(col){
+  cfg.glowColor=col; saveCfg(); applyAvatarGlow(); renderSwatches();
+}
+
+// ══ DRAG AVATAR ══
+function initDrag(){
+  const el=document.getElementById('fav');
+  let dragging=false,ox=0,oy=0;
+  const pos=JSON.parse(localStorage.getItem('avP')||'{"x":16,"y":80}');
+  el.style.left=pos.x+'px'; el.style.top=pos.y+'px';
+  updateFloatSize();
+  el.addEventListener('pointerdown',e=>{
+    e.preventDefault(); dragging=true;
+    const r=el.getBoundingClientRect(); ox=e.clientX-r.left; oy=e.clientY-r.top;
+    el.setPointerCapture(e.pointerId);
+  });
+  el.addEventListener('pointermove',e=>{
+    if(!dragging) return;
+    el.style.left=(e.clientX-ox)+'px'; el.style.top=(e.clientY-oy)+'px';
+  });
+  el.addEventListener('pointerup',()=>{
+    dragging=false;
+    localStorage.setItem('avP',JSON.stringify({x:parseInt(el.style.left),y:parseInt(el.style.top)}));
+  });
+}
+
+// ══ THEME ══
+function applyTheme(){
+  document.documentElement.classList.toggle('dark',cfg.dark);
+  const b=document.getElementById('ttb'); if(b) b.className='tog '+(cfg.dark?'on':'of');
+  const l=document.getElementById('tl'); if(l) l.textContent=cfg.dark?'Tamna tema':'Svetla tema';
+}
+function tt(){cfg.dark=!cfg.dark;saveCfg();applyTheme();}
+
+// ══ MIC ══
+function initSpeech(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition; if(!SR) return;
+  recog=new SR(); recog.continuous=false; recog.interimResults=true; recog.lang='sr-RS';
+  recog.onresult=e=>{
+    let it='',fn='';
+    for(let i=0;i<e.results.length;i++){if(e.results[i].isFinal)fn+=e.results[i][0].transcript;else it+=e.results[i][0].transcript;}
+    const b=document.getElementById('ltb');
+    if(it){b.textContent=it;b.style.display='block';}
+    if(fn){b.style.display='none';handleTrans(fn);setMicSt(false);}
+  };
+  recog.onerror=()=>setMicSt(false); recog.onend=()=>setMicSt(false);
+}
+function toggleMic(){
+  if(!recog){showToast('Nije podržano u ovom pretraživaču');return;}
+  if(isRec){recog.stop();}else{try{document.getElementById('ltb').style.display='none';recog.start();setMicSt(true);}catch(e){}}
+}
+function setMicSt(on){
+  isRec=on;
+  const btn=document.getElementById('mb'); const inn=document.getElementById('mi'); const g=document.getElementById('mg');
+  btn.className='mbtn '+(on?'lis':'idl nb');
+  document.getElementById('mic').setAttribute('stroke',on?'#fff':'hsl(210,100%,55%)');
+  if(on){inn.style.background='rgba(255,255,255,.15)';}else{inn.className='min2 np';}
+  g.classList.toggle('act',on);
+  document.getElementById('mlab').textContent=on?'🔴 Slušam...':'🎙️ Pritisni za glas';
+}
+async function handleTrans(text){
+  showToast('🎙️ "'+text.slice(0,40)+'"');
+  if(curView==='chat'){await sc(text);return;}
+  const l=text.toLowerCase();
+  const isAlarm=['alarm','podset','probudi','podseti','ujutru','uveče','buđenje','budi me','sati'].some(k=>l.includes(k));
+  const isNote=['zapiši','beleška','zapamti','lista','kupi','napiši'].some(k=>l.includes(k));
+  if(isAlarm){
+    const tm=text.match(/(\d{1,2})[:\s]?(\d{2})?/);
+    const t=tm?`${String(tm[1]).padStart(2,'0')}:${tm[2]||'00'}`:'08:00';
+    adDirect(text.slice(0,40),t,'reminder',text);
+    spk('Alarm postavljen'); showToast('⏰ Alarm dodat!');
+    sv('main'); setTimeout(()=>tp('alarms'),100);
+  }else if(isNote){
+    an(text); spk('Beleška sačuvana'); showToast('📝 Beleška sačuvana');
+    sv('main'); setTimeout(()=>tp('notes'),100);
+  }else{
+    sv('chat'); setTimeout(()=>sc(text),150);
+  }
+}
+
+// ══ SPEAK ══
+function spk(t){
+  if(!('speechSynthesis'in window)) return;
+  window.speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(t); u.lang='sr-RS'; u.rate=0.95; u.pitch=1.1;
+  window.speechSynthesis.speak(u);
+}
+
+// ══ ALARM CHECKER ══
+const fired=new Set();
+function initAlarmChecker(){
+  setInterval(()=>{
+    const now=new Date();
+    const hm=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
+    const dk=now.toDateString();
+    alarms.forEach(a=>{
+      if(!a.enabled) return;
+      const fk=a.id+'-'+dk;
+      if(a.time===hm&&!fired.has(fk)){
+        fired.add(fk);
+        if(Notification.permission==='granted') new Notification('⏰ '+a.label,{body:a.description||'Vreme: '+a.time});
+        spk('Alarm: '+a.label); showToast('⏰ '+a.label);
+      }
+    });
+  },15000);
+}
+
+// ══ GREETING ══
+function startupGreeting(){
+  setTimeout(()=>{
+    const h=new Date().getHours();
+    let g=h<12?'Dobro jutro!':h<18?'Dobar dan!':'Dobro veče!';
+    const a=alarms.filter(x=>x.enabled);
+    let s=g+' ';
+    if(a.length) s+=`Imaš ${a.length} alarm${a.length>1?'a':''}. `;
+    if(notes.length) s+=`Imaš ${notes.length} beleški. `;
+    s+='Kako ti mogu pomoći?';
+    spk(s);
+  },1600);
+}
+
+// ══ TOAST ══
+let ttmr;
+function showToast(m){
+  const t=document.getElementById('tst'); t.textContent=m; t.classList.add('show');
+  clearTimeout(ttmr); ttmr=setTimeout(()=>t.classList.remove('show'),2100);
+}
+
+// ══ HELPERS ══
+function esc(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function ft(iso){try{const d=new Date(iso),n=new Date();return d.toDateString()===n.toDateString()?d.toLocaleTimeString('sr',{hour:'2-digit',minute:'2-digit'}):d.toLocaleDateString('sr',{day:'numeric',month:'short'});}catch{return '';}}
+function fat(t){try{const[h,m]=t.split(':');const d=new Date();d.setHours(+h,+m);return d.toLocaleTimeString('sr',{hour:'2-digit',minute:'2-digit'});}catch{return t;}}
+function ha(hex,a){const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);return `rgba(${r},${g},${b},${a.toFixed(2)})`;}
+
+init();
+</script>
+</body>
+</html>
